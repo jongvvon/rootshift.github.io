@@ -50,4 +50,6 @@ order: 4
 
 ---
 
-> 틀린 내용이나 피드백은 언제든 환영합니다 → **miles@rootshift.dev**
+> 틀린 내용이나 피드백은 언제든 환영합니다.
+>
+> 📬 [miles@rootshift.dev](mailto:miles@rootshift.dev)
