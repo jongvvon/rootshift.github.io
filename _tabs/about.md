@@ -5,10 +5,19 @@ order: 4
 
 # 안녕하세요, Miles입니다 👋
 
-인천국제공항 IT 인프라 팀에서 일하고 있어요.  
-공항 시스템이 멈추면 비행기도 멈추는 환경에서, 365일 24시간 돌아가는 인프라를 관리하고 있습니다.
+공항 IT 보안 인프라 팀에서 일하고 있어요.  
+체크인 키오스크부터 보안 시스템까지, 공항 내 IT 인프라를 운영하고 있습니다.
 
 요즘은 DevOps/SRE로 전향을 준비하면서 쿠버네티스, 자동화 파이프라인, 모니터링 스택을 공부 중입니다.
+
+---
+
+## rootshift라는 이름
+
+스케줄 근무(shift)에 root를 붙였어요.
+
+현장 엔지니어는 root에서 시작한다는 의미도 담겨 있고,  
+교대근무하면서 서버 앞에 앉아 있던 시간들이 지금의 저를 만들었으니까요.
 
 ---
 
@@ -25,17 +34,19 @@ order: 4
 
 ## 카테고리
 
-- **인프라 실무** — 현장에서 만난 장애와 트러블슈팅
-- **DevOps 전환기** — K8s, ELK, CI/CD 공부 기록
-- **테크 탐험** — 새로운 툴 써본 후기
+| | |
+|---|---|
+| 🔧 **인프라 실무** | 현장에서 만난 장애와 트러블슈팅 |
+| ☸️ **DevOps 전환기** | K8s, ELK, CI/CD 공부 기록 |
+| 🧪 **테크 탐험** | 새로운 툴 써본 후기 |
 
 ---
 
 ## 스택
 
-- **현업:** Linux, Network, VMware, Storage
-- **공부 중:** Kubernetes, Ansible, Terraform, Prometheus/Grafana
-- **요즘 관심:** Platform Engineering, GitOps
+**현업:** Linux, Network, VMware, Storage, 보안 인프라  
+**공부 중:** Kubernetes, Ansible, Terraform, Prometheus/Grafana  
+**요즘 관심:** Platform Engineering, GitOps
 
 ---
 
