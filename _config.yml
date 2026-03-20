@@ -24,23 +24,20 @@ description: >- # used by seo meta and the atom feed
 # Fill in the protocol & hostname for your site.
 # E.g. 'https://username.github.io', note that it does not end with a '/'.
 url: "https://jongvvon.github.io"
+baseurl: "/rootshift.github.io"
 
 github:
-  username: jongvvon # change to your GitHub username
+  username: # hidden
 
 twitter:
-  username: twitter_username # change to your Twitter username
+  username: # hidden
 
 social:
-  # Change to your full name.
-  # It will be displayed as the default author of the posts and the copyright owner in the Footer
-  name: miles
-  email: example@domain.com # change to your email address
-  fediverse_handle: # fill in your fediverse handle. E.g. "@username@domain.com"
+  name: rootshift
+  email: # hidden
+  fediverse_handle:
   links:
-    # The first element serves as the copyright owner's link
-    - https://twitter.com/username # change to your Twitter homepage
-    - https://github.com/username # change to your GitHub homepage
+    - https://jongvvon.github.io/rootshift.github.io
     # Uncomment below to add more social links
     # - https://www.facebook.com/username
     # - https://www.linkedin.com/in/username
@@ -151,7 +148,7 @@ pwa:
 paginate: 10
 
 # The base URL of your site
-baseurl: ""
+# baseurl is set above near url
 
 # ------------ The following options are not recommended to be modified ------------------
 
