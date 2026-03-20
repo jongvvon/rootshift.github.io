@@ -54,7 +54,7 @@ docker run -d \
   --name n8n \
   --restart always \
   -p 5678:5678 \
-  -e N8N_HOST="n8n.rootshift.dev" \
+  -e N8N_HOST="n8n.example.com" \
   -e N8N_PROTOCOL=https \
   -v n8n_data:/home/node/.n8n \
   docker.n8n.io/n8nio/n8n
