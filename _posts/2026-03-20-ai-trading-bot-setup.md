@@ -1,5 +1,5 @@
 ---
-title: "AI가 내 돈을 굴린다 — 밀리 트레이딩봇 구축기"
+title: "AI가 내 돈을 굴린다 — 자동 트레이딩봇 구축기"
 date: 2026-03-20 23:30:00 +0900
 categories: [테크 탐험]
 tags: [trading, n8n, alpaca, claude, ai, 자동화, docker, telegram]
