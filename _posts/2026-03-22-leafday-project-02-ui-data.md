@@ -58,6 +58,7 @@ Tab Navigator (하단 탭)
 `App.tsx`에서 전체 구조를 잡았다:
 
 ```tsx
+{% raw %}
 function BookshelfStack() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
@@ -68,6 +69,7 @@ function BookshelfStack() {
     </Stack.Navigator>
   );
 }
+{% endraw %}
 ```
 
 `presentation: 'modal'`을 주면 새 책 화면이 아래에서 올라오는 느낌으로 뜬다.
@@ -202,6 +204,7 @@ const momentumFlip = (vel: number) => {
 페이지 전환 애니메이션은 `perspective + rotateY + translateX` 조합:
 
 ```tsx
+{% raw %}
 const bookRotate = bookFlip.interpolate({
   inputRange: [-1, 0, 1],
   outputRange: ['180deg', '0deg', '-180deg'],
@@ -218,6 +221,7 @@ const bookTranslate = bookFlip.interpolate({
     { rotateY: bookRotate },
   ],
 }}>
+{% endraw %}
 ```
 
 ### 카드플립 (앞/뒷면 전환)
