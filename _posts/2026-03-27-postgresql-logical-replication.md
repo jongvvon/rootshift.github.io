@@ -78,9 +78,9 @@ FROM pg_replication_slots;
 
  slot_name │  plugin   │ active │ restart_lsn
 -----------+-----------+--------+-------------
- pvms_1    │ pgoutput  │ t      │ 0/B4A3F210
- pvms_2    │ pgoutput  │ t      │ 0/B4A3F210
- pvms_3    │ pgoutput  │ f      │ 0/A1230000  ← 문제
+ svc_1    │ pgoutput  │ t      │ 0/B4A3F210
+ svc_2    │ pgoutput  │ t      │ 0/B4A3F210
+ svc_3    │ pgoutput  │ f      │ 0/A1230000  ← 문제
 ```
 
 - `active: t` → 현재 연결 중, 정상적으로 WAL을 읽어가고 있음
@@ -102,12 +102,12 @@ FROM pg_replication_slots;
 ```
 단말기 C, 네트워크 단절
     ↓
-pvms_C 슬롯: active → false
-pvms_C 슬롯의 restart_lsn이 단절 시점에서 STOP
+svc_C 슬롯: active → false
+svc_C 슬롯의 restart_lsn이 단절 시점에서 STOP
     ↓
 DB에는 계속 데이터가 들어오고 WAL이 계속 생성됨
     ↓
-PostgreSQL: "pvms_C가 아직 이 WAL 안 읽었음 → 삭제 불가"
+PostgreSQL: "svc_C가 아직 이 WAL 안 읽었음 → 삭제 불가"
     ↓
 WAL 파일이 삭제되지 못하고 pg_wal에 누적 시작
     ↓
@@ -134,10 +134,10 @@ ORDER BY pg_wal_lsn_diff(pg_current_wal_lsn(), restart_lsn) DESC;
 
  slot_name │ active │ wal_lag
 -----------+--------+----------
- pvms_1    │ t      │ 18 kB     ← 정상 (실시간 동기화)
- pvms_2    │ t      │ 18 kB     ← 정상
- pvms_C    │ f      │ 2400 MB   ← 4시간 후 이 상태
- pvms_C    │ f      │ 38 GB     ← 2일 후
+ svc_1    │ t      │ 18 kB     ← 정상 (실시간 동기화)
+ svc_2    │ t      │ 18 kB     ← 정상
+ svc_C    │ f      │ 2400 MB   ← 4시간 후 이 상태
+ svc_C    │ f      │ 38 GB     ← 2일 후
 ```
 
 정상 구독자는 18KB 수준을 유지한다. 끊긴 구독자는 시간이 지날수록 WAL lag가 폭증한다.
@@ -212,7 +212,7 @@ WHERE NOT active
 ORDER BY pg_wal_lsn_diff(pg_current_wal_lsn(), restart_lsn) DESC;
 
 -- 해당 슬롯 삭제 (구독자 재연결 시 재생성 필요)
-SELECT pg_drop_replication_slot('pvms_C');
+SELECT pg_drop_replication_slot('svc_C');
 ```
 
 슬롯을 삭제하면 WAL이 즉시 정리된다. 구독자가 다시 연결하면 슬롯이 재생성되고, 이때 누락된 데이터는 full resync가 발생한다.
@@ -239,7 +239,7 @@ FROM pg_replication_slots;
 
  slot_name │ invalidation_reason
 -----------+--------------------
- pvms_C    │ wal_removed
+ svc_C    │ wal_removed
 ```
 
 무효화된 슬롯은 더 이상 WAL을 잡지 않는다. 구독자가 재연결하면 full resync 후 정상 복구된다.

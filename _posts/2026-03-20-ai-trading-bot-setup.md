@@ -231,7 +231,52 @@ MU 26주 | 매입$437.50 현재$435.01 | 손익$-64.85
 | 03-24 | $99,302 | $99,366 | +$64 (+0.06%) | 없음 | 포지션 유지. XOM 롱 이익 확대(+$118.52), NVDA/QQQ 숏 소폭 손실(-$57.12) |
 | 03-25 | $99,478 | $99,290 | -$189 (-0.19%) | 없음 | 포지션 유지. XOM 롱 하락(-$72.85), NVDA 숏 손실 확대(-$91.28), QQQ 숏 보합 |
 | 03-26 | $99,285 | $99,100 | -$185 (-0.19%) | QQQ 숏 7회 체결(avg $575.76), USO 매수 4회 체결(avg $118.43) | confidence 기준 40%로 하향, SELL 신호 추가로 매매 대폭 활성화. QQQ 숏 126주, USO 롱 289주, XOM 롱 31주 보유. 주문 오류(bracket order) 수정 후 market 주문으로 전환 |
-| 03-27 | $99,568 | $104,683 | +$5,115 (+5.14%) | QQQ 숏 10회 체결(avg $568.0, 150주 추가) | QQQ 숏 276주·avg $571.88, USO 롱 289주·avg $118.43, NVDA 숏 28주·avg $175.20, XOM 롱 31주·avg $160.68 보유. QQQ·NVDA 숏 미실현이익 확대(QQQ -2.16%, NVDA -2.20%), USO 롱 강세(+6.80%) |
+| 03-27 | $99,568 | $105,182 | +$5,614 (+5.64%) | QQQ 숏 10회 체결(avg $568.0, 150주 추가) | QQQ 숏 276주(미실현 +$3,157), USO 롱 289주(미실현 +$2,158), NVDA 숏 28주(미실현 +$235), XOM 롱 31주(미실현 +$328) 보유. 전략 전환 후 첫 큰 수익일 |
+
+---
+
+## 📈 자산 추이
+
+<canvas id="equityChart" style="max-height:300px"></canvas>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+new Chart(document.getElementById('equityChart'), {
+  type: 'line',
+  data: {
+    labels: ['03-20', '03-23', '03-24', '03-25', '03-26', '03-27'],
+    datasets: [{
+      label: '총 자산 ($)',
+      data: [99766, 99299, 99366, 99290, 99100, 105182],
+      borderColor: '#4CAF50',
+      backgroundColor: 'rgba(76,175,80,0.08)',
+      borderWidth: 2,
+      pointRadius: 4,
+      pointBackgroundColor: '#4CAF50',
+      fill: true,
+      tension: 0.3
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: ctx => '$' + ctx.parsed.y.toLocaleString()
+        }
+      }
+    },
+    scales: {
+      y: {
+        min: 98000,
+        ticks: {
+          callback: val => '$' + val.toLocaleString()
+        }
+      }
+    }
+  }
+});
+</script>
 
 ---
 
