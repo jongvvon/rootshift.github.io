@@ -1,8 +1,14 @@
 ---
-title: "React Native로 책 페이지 넘기기 애니메이션 구현기 — flipbook effect"
+title: "Leafday 외전 #1 — 책 페이지 넘기기 애니메이션 13번의 시도"
 date: 2026-03-27 16:00:00 +0900
 categories: [사이드 프로젝트]
 tags: [react-native, animation, leafday, ios, expo, eas, flipbook]
+---
+
+> **Leafday 시리즈 외전 #1**  
+> 이 글은 완성된 구현이 아닙니다. 아직 작업 중인 기능의 삽질 기록입니다.  
+> 최종 해결까지의 과정을 시리즈로 이어갑니다.
+
 ---
 
 ## 목표
@@ -205,8 +211,18 @@ React Native Animated로 책 페이지 넘기기를 구현할 때 핵심은:
 3. **translateX trick으로 오른쪽 축** — `transform-origin: 100%` 없이 구현
 4. **Promise 체이닝으로 연속 flip** — async/await로 순차 실행
 
-총 빌드 횟수: 13번 (...삽질의 역사)
+총 빌드 횟수: 21번 (...삽질의 역사)
 
 ---
 
-*Leafday 시리즈 포스팅은 계속됩니다.*
+## 현재 상태
+
+현재 빌드 21 기준으로 2단계 flip 애니메이션이 구현되어 있지만, 아직 원하는 느낌은 아니다.  
+진짜 책처럼 넘어가는 느낌을 위해 계속 작업 중.
+
+다음 외전에서 최종 구현을 다룰 예정.
+
+---
+
+*→ 다음: Leafday 외전 #2 — 최종 page flip 구현 (작업 중)*  
+*← 이전: [Leafday #3 — TestFlight 배포까지](/posts/leafday-project-03-testflight)*
