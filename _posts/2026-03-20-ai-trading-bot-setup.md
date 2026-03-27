@@ -18,28 +18,26 @@ tags: [trading, n8n, alpaca, claude, ai, 자동화, docker, telegram]
 ## 전체 아키텍처
 
 ```
-NewsAPI (뉴스 30개)
+Alpaca News API (실시간 금융 뉴스 50개)
     │
     ▼
-Alpaca API ──── 계좌/포지션/SPY가격
+Alpaca API ──── 계좌/포지션/SPY현재가/종목현재가
     │
     ▼
-n8n (Docker, 15분 스케줄)
+n8n (Docker, 15분 스케줄 — 미국 장 시간 KST 22:30~05:00)
     │
     ▼
-Claude (Anthropic) ← OpenClaw 통해 판단 위임
+Claude (Anthropic) ← 계좌·포지션·뉴스·시장지표 종합 판단
     │
-    ├── BUY → Alpaca 주문 (bracket order + stop-loss)
+    ├── BUY  → Alpaca market 주문
+    ├── SELL → Alpaca market 주문 (숏 포함)
     └── HOLD → 패스
     │
     ▼
 Telegram 보고
-    │
-    ▼
-Cloudflare → blog.rootshift.dev 결과 업데이트
 ```
 
-총 연계 서비스: **n8n, Docker, Alpaca, NewsAPI, Anthropic(Claude), Telegram, Cloudflare, OpenClaw**
+총 연계 서비스: **n8n, Docker, Alpaca(거래+뉴스), Anthropic(Claude), Telegram, OpenClaw**
 
 ---
 
@@ -74,34 +72,34 @@ docker run -d \
 
 ### 2. Alpaca — 브로커 API
 
-페이퍼 트레이딩 계좌로 실제 시장 환경에서 가상 매매를 한다. REST API로 주문/포지션/계좌 정보를 주고받는다.
+페이퍼 트레이딩 계좌로 실제 시장 환경에서 가상 매매를 한다. REST API로 주문/포지션/계좌/뉴스 정보를 주고받는다.
 
-손절 자동화를 위해 **bracket order**를 사용한다. 매수와 동시에 stop-loss가 설정된다:
+초기엔 bracket order(진입 + stop-loss 동시 설정)를 사용했는데, Alpaca bracket order는 `take_profit`도 필수라 요청이 계속 실패했다. 결국 **단순 market order**로 교체했다.
 
 ```json
 {
-  "symbol": "AAPL",
-  "qty": "3",
-  "side": "buy",
+  "symbol": "QQQ",
+  "qty": "15",
+  "side": "sell",
   "type": "market",
-  "time_in_force": "day",
-  "order_class": "bracket",
-  "stop_loss": {
-    "stop_price": "190.00"
-  }
+  "time_in_force": "day"
 }
 ```
 
-진입가 대비 **-5%** 에 stop-loss가 걸린다. 손절은 자동이다.
+BUY/SELL 모두 지원한다. `side: "sell"`이면 숏(공매도) 주문이다. 손절은 AI가 다음 사이클에서 판단해서 청산하는 방식으로 처리한다.
 
-### 3. NewsAPI — 정보 수집
+### 3. Alpaca News API — 정보 수집
 
-미국 주식 시장 관련 뉴스 30개를 실시간으로 수집한다.
+처음엔 NewsAPI를 썼는데, 실시간 뉴스 수신이 안 되고 딜레이가 있는 문제가 있었다. Alpaca에서 제공하는 News API로 교체했다.
 
 ```
-q=stock+market+OR+S&P500+OR+nasdaq+OR+trading
-language=en&sortBy=publishedAt&pageSize=30
+https://data.alpaca.markets/v1beta1/news
+  ?symbols=SPY,QQQ,NVDA,AAPL,MSFT,XOM,USO
+  &limit=50
+  &sort=desc
 ```
+
+종목을 직접 지정해서 관련 뉴스만 받아오기 때문에 노이즈가 적고, Alpaca API Key 하나로 시세 + 뉴스를 모두 처리할 수 있어서 관리도 단순해졌다. 최신 50개 뉴스를 내림차순으로 받아온다.
 
 ### 4. Claude (Anthropic) — 판단 주체
 
@@ -111,42 +109,50 @@ Claude에게 넘기는 정보:
 
 ```
 === 계좌 현황 ===
-총 자산: $100,236
-현금: $88,807
-총 손익: +$236 (+0.24%)
+총 자산: $105,182
+현금: $222,842
+총 손익: +$5,182 (+5.18%)
 일일 손실 한도 도달: 아니오
 
 === 현재 포지션 ===
-MU 26주(long) | 매입$437.50 현재$435.01 | 손익$-64.85(-0.57%)
+QQQ -276주(short) | 매입$571.88 현재$568.03 | 손익$+3,157(+2.00%)
+USO  289주(long)  | 매입$118.43 현재$125.90 | 손익$+2,158(+6.30%)
+NVDA -28주(short) | 매입$175.20 현재$166.80 | 손익$+235(+4.79%)
+XOM   31주(long)  | 매입$160.68 현재$171.25 | 손익$+328(+6.58%)
 
 === 시장 지표 ===
-SPY 현재가: $652.13
+SPY 현재가: $568.03
 
-=== 최근 뉴스 (30개) ===
-- 중동 긴장 고조로 유가 급등...
-- 나스닥 1% 하락...
-(30개)
+=== 최근 뉴스 (50개, Alpaca News API) ===
+- 이란 협상 교착, 호르무즈 해협 긴장 고조 → 유가 상승
+- NVDA 70% 폭락 경고 (Galloway 분석)
+- 연준 인플레이션 상향 조정...
+(Alpaca에서 SPY/QQQ/NVDA/AAPL/MSFT/XOM/USO 관련 뉴스 50개)
 
-=== 투자 규칙 ===
-- 1회 최대 투자: 총 자산의 5%
-- 손절선: -5% (bracket order)
-- 일일 손실 한도: -20%
-- 숏 포지션 금지
-- confidence 70% 미만이면 HOLD
+=== 투자 전략: 공격적 모멘텀 ===
+- 1회 최대 투자: 총 자산의 10~15%
+- 목표: 총 자산의 70~80% 항상 투자 유지
+- 손절선: -4%
+- 일일 손실 한도: -20% 도달 시 거래 중단
+- confidence 40% 이상이면 즉시 진입
+- 롱/숏 동시 보유 허용
+- HOLD는 진짜 불확실할 때만
 ```
 
 Claude가 반환하는 형식:
 
 ```json
 {
-  "signal": "HOLD",
-  "ticker": "MU",
-  "confidence": 42,
-  "reason": "중동 긴장 고조로 유가 $119 급등, 인플레이션 재점화 우려. 나스닥 1% 하락 등 기술주 하방 압력 강함.",
-  "market_sentiment": "부정",
-  "risk_note": "지정학적 불확실성 해소 전 추가 매수 부적절"
+  "signal": "BUY",
+  "ticker": "USO",
+  "confidence": 72,
+  "reason": "이란 분쟁 장기화로 호르무즈 해협 긴장 고조, 유가 상승 모멘텀 강화. XOM 롱과 시너지.",
+  "market_sentiment": "긍정(에너지)",
+  "risk_note": "협상 합의 시 급락 위험, 분할 진입 권장"
 }
 ```
+
+초기엔 `BUY/HOLD`만 있었다. 공격적 전략으로 전환하면서 `SELL` 신호(숏 포지션)를 추가했다.
 
 ### 5. OpenClaw — AI 레이어 통합
 
@@ -200,17 +206,19 @@ MU 26주 | 매입$437.50 현재$435.01 | 손익$-64.85
 
 ---
 
-## 실제 첫 판단 결과
+## 삽질 기록 — 실제로 겪은 문제들
 
-**2026-03-20 23:19 (KST)**
+**① NewsAPI → Alpaca News로 교체**
+처음엔 NewsAPI를 썼는데 실시간 뉴스가 안 왔다. 수십 분 딜레이가 생기니 판단 품질이 떨어졌다. Alpaca API에 뉴스 엔드포인트가 있다는 걸 뒤늦게 알고 교체했다. 종목 필터까지 돼서 훨씬 깔끔해졌다.
 
-```
-시장: 부정
-신호: HOLD (confidence 42%)
-근거: 중동 긴장 고조, 유가 급등, 나스닥 하락
-```
+**② Bracket order → market order**
+Alpaca bracket order는 `stop_loss`와 `take_profit` 둘 다 필수다. stop_loss만 넣으면 422 에러. 결국 단순 market order로 교체했다.
 
-42%는 기준치 70%에 한참 못 미쳐서 HOLD. 당연한 판단이다.
+**③ HOLD만 나오는 봇 — confidence 기준 문제**
+초기 설정이 confidence 70% 이상만 매매하도록 했는데, AI가 시장 불확실성을 이유로 매번 45% confidence를 반환했다. 일주일 동안 투자금의 10%도 활용 못 했다. 기준을 40%로 낮추고 나서야 실제 매매가 시작됐다.
+
+**④ JSON 파싱 에러**
+AI가 여러 종목을 동시에 배열(`[]`)로 반환하기 시작했는데, 파서가 단일 객체만 처리했다. 코드 수정으로 배열/객체 모두 처리하고 confidence 높은 것 하나만 실행하도록 변경했다.
 
 ---
 
