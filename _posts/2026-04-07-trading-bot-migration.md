@@ -1,6 +1,6 @@
 ---
 title: "AI 트레이딩봇 v2 — n8n 걷어내고 Python 스크립트로 마이그레이션한 이유"
-date: 2026-04-07 09:00:00 +0900
+date: 2026-04-06 23:00:00 +0900
 categories: [DevOps 전환기]
 tags: [trading-bot, python, n8n, automation, alpaca]
 ---

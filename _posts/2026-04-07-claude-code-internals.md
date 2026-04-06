@@ -1,6 +1,6 @@
 ---
 title: "Claude Code 소스코드 해부 — 프로덕션 AI 에이전트는 어떻게 설계됐나"
-date: 2026-04-07 11:00:00 +0900
+date: 2026-04-06 23:30:00 +0900
 categories: [DevOps 전환기]
 tags: [claude-code, agent, llm, typescript, architecture]
 ---
