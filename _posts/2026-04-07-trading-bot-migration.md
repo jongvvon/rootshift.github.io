@@ -1,7 +1,7 @@
 ---
-title: "AI 트레이딩봇 v2 — n8n 걷어내고 Python 스크립트로 마이그레이션한 이유"
+title: "AI 트레이딩봇 — Docker 없이 Python 스크립트 하나로 운영하기"
 date: 2026-04-06 23:00:00 +0900
-categories: [DevOps 전환기]
+categories: [테크 탐험]
 tags: [trading-bot, python, n8n, automation, alpaca]
 ---
 
